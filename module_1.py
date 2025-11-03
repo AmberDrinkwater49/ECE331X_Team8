@@ -18,7 +18,7 @@ import adi
 # ----------------------------------------------------------
 
 # Create radio
-sdr = adi.ad9363(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
+sdr = adi.Pluto(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
 Fc = 433.9e6 #center frequency
 bandwidth = 10e6 #Bandwidth of front-end analog filter of RX path
 Fm = bandwidth/2
@@ -26,13 +26,13 @@ Fs = 6e6 #sampling frequency of ADC in samples per second
 
 
 # Configure properties
-sdr.rx_rf_bandwidth = bandwidth #Bandwidth of front-end analog filter of RX path
+sdr.rx_rf_bandwidth = (int)(bandwidth) #Bandwidth of front-end analog filter of RX path
                       #max of 20MHz for AD9363
                       #will we have to limit bandwidth further bc data limitations?
 
 sdr.sample_rate = Fs #Sample rate RX and TX paths in samples per second
                             #max of 61440000 S/s (61.44 MS/s)
-sdr.rx_lo =Fc #Carrier frequency of RX path (433.9 MHz)
+sdr.rx_lo =(int)(Fc) #Carrier frequency of RX path (433.9 MHz)
 
 #sdr.tx_lo = 2000000000
 #sdr.tx_cyclic_buffer = True #sent data will keep getting repeated
@@ -51,7 +51,7 @@ sdr.rx_enabled_channels = [0] #enable only one rx channel
 def dataCapture() -> list:
     #This function begins the capture of data at given frequencies to decode the thermometers
     data = sdr.rx()
-    Rx_0 = data[0]
+    Rx_0 = data
     return Rx_0
     
 
@@ -97,3 +97,5 @@ def main():
     plt.ylabel('Frequency [Hz]')
     plt.xlabel('Time [seconds]')
     plt.show()
+
+main()
