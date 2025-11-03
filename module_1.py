@@ -46,6 +46,8 @@ sdr.gain_control_mode_chan0 = "slow_attack" #Mode of receive path AGC(Automatic 
 
 # Configuration of data channel
 sdr.rx_enabled_channels = [0] #enable only one rx channel
+#sdr.rx_buffer_size =  (int)(Fs * 30)  #Size of receive buffer in samples
+            #want 30 seconds of data
 
 
 def dataCapture() -> list:
