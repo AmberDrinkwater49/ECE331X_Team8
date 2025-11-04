@@ -103,7 +103,7 @@ def main():
     data = dataCapture()
         for y in range((int)(Fs)):
             final_data[x*Fs + y] = data[y]
-    t_spectro, f_spectro, specresults =  myspectrogram(final, 256, 64, Fs)
+    t_spectro, f_spectro, specresults =  myspectrogram(final_data, 256, 64, Fs)
 
     # ----------------------------------------------------------
     # Plot handmade version of spectrogram using color mesh plotting routine
