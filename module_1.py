@@ -46,8 +46,12 @@ sdr.gain_control_mode_chan0 = "slow_attack" #Mode of receive path AGC(Automatic 
 
 # Configuration of data channel
 sdr.rx_enabled_channels = [0] #enable only one rx channel
-#sdr.rx_buffer_size =  (int)(Fs * 30)  #Size of receive buffer in samples
-            #want 30 seconds of data
+sdr.rx_buffer_size =  (int)(Fs)  #Size of receive buffer in samples
+
+final_data = [0] * ((int)(Fs * 30))
+
+
+
 
 
 def dataCapture() -> list:
@@ -56,11 +60,14 @@ def dataCapture() -> list:
     Rx_0 = data
     return Rx_0
     
-
+for x in range(30):
+    data = dataCapture()
+    for y in range(Fs):
+        final_data[x*Fs + y] = data[y]
 
 # ----------------------------------------------------------
 # Define the handmade spectrogram function
-def myspectrogram(data,N,M,Fs):
+def myspectrogram(final_data,N,M,Fs):
     
     # Calculate number of windows to be processed
     num_windows = int((len(data) - (M/2)) // (N - (M/2)))
