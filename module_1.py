@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy import signal
 import time
 import adi
+import json
 
 num_seconds = 10
 # ----------------------------------------------------------
@@ -20,7 +21,7 @@ num_seconds = 10
 
 # Create radio
 sdr = adi.Pluto(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
-Fc = (int)(433.9e6) #center frequency
+Fc = (int)(433.9e6) #carrier frequency
 bandwidth = 10e6 #Bandwidth of front-end analog filter of RX path
 Fm = bandwidth/2
 Fs = (int)(250e4) #sampling frequency of ADC in samples per second
@@ -92,7 +93,14 @@ def myspectrogram(data,N,M,Fs):
     return t_spectro, f_spectro, spectrogram_results
 
 
+def save_data(file_name, data):
+    with open(file_name, 'w') as file:
+        json.dump(data, file)
 
+def retrieve_data(file_name):
+    with open(file_name, 'r') as file:
+        data = json.load(file)
+        return data
 
 def main():
     #data = dataCapture()
@@ -103,6 +111,7 @@ def main():
             #print(y)
             final_data[x*Fs + y] = data[y]
     print("i did da loops")
+    save_data('spectrogram.json', final_data)
     t_spectro, f_spectro, specresults =  myspectrogram(final_data, 256, 64, Fs)
 
     # ----------------------------------------------------------
