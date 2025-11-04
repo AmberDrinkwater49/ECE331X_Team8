@@ -104,21 +104,23 @@ def retrieve_data(file_name):
 
 def main():
     #data = dataCapture()
-    for x in range(num_seconds):
-        print(x)
-        data = dataCapture()
-        for y in range((int)(Fs)):
-            #print(y)
-            final_data[x*Fs + y] = data[y]
-    print("i did da loops")
-    save_data('spectrogram.json', final_data)
-    t_spectro, f_spectro, specresults =  myspectrogram(final_data, 256, 64, Fs)
+    try:
+        for x in range(num_seconds):
+            print(x)
+            data = dataCapture()
+            for y in range((int)(Fs)):
+                #print(y)
+                final_data[x*Fs + y] = data[y]
+        print("i did da loops")
+    finally:
+        save_data('spectrogram.json', final_data)
+        t_spectro, f_spectro, specresults =  myspectrogram(final_data, 256, 64, Fs)
 
-    # ----------------------------------------------------------
-    # Plot handmade version of spectrogram using color mesh plotting routine
-    plt.pcolormesh(t_spectro,f_spectro,np.log10(specresults.T),shading='auto')
-    plt.ylabel('Frequency [Hz]')
-    plt.xlabel('Time [seconds]')
-    plt.show()
+        # ----------------------------------------------------------
+        # Plot handmade version of spectrogram using color mesh plotting routine
+        plt.pcolormesh(t_spectro,f_spectro,np.log10(specresults.T),shading='auto')
+        plt.ylabel('Frequency [Hz]')
+        plt.xlabel('Time [seconds]')
+        plt.show()
 
 main()
