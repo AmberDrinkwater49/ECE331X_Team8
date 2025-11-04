@@ -60,11 +60,7 @@ def dataCapture() -> list:
     Rx_0 = data
     return Rx_0
 
-    
-for x in range(30):
-    data = dataCapture()
-    for y in range((int)(Fs)):
-        final_data[x*Fs + y] = data[y]
+
 
 # ----------------------------------------------------------
 # Define the handmade spectrogram function
@@ -100,7 +96,7 @@ def myspectrogram(data,N,M,Fs):
 def main():
     #data = dataCapture()
     for x in range(30):
-    data = dataCapture()
+        data = dataCapture()
         for y in range((int)(Fs)):
             final_data[x*Fs + y] = data[y]
     t_spectro, f_spectro, specresults =  myspectrogram(final_data, 256, 64, Fs)
