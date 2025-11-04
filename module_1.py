@@ -4,6 +4,7 @@ from scipy import signal
 import time
 import adi
 
+num_seconds = 10
 # ----------------------------------------------------------
 # Code for generating a spectrogram based on the intermittent 
 # wireless transmission of AcuRite Wireless Digital Weather Thermometer
@@ -22,7 +23,7 @@ sdr = adi.Pluto(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
 Fc = (int)(433.9e6) #center frequency
 bandwidth = 10e6 #Bandwidth of front-end analog filter of RX path
 Fm = bandwidth/2
-Fs = (int)(6e6) #sampling frequency of ADC in samples per second
+Fs = (int)(250e4) #sampling frequency of ADC in samples per second
 
 
 # Configure properties
@@ -48,7 +49,7 @@ sdr.gain_control_mode_chan0 = "slow_attack" #Mode of receive path AGC(Automatic 
 sdr.rx_enabled_channels = [0] #enable only one rx channel
 sdr.rx_buffer_size =  (int)(Fs)  #Size of receive buffer in samples
 
-final_data = [0] * ((int)(Fs * 30))
+final_data = [0] * ((int)(Fs * num_seconds))
 
 
 
@@ -95,10 +96,13 @@ def myspectrogram(data,N,M,Fs):
 
 def main():
     #data = dataCapture()
-    for x in range(30):
+    for x in range(num_seconds):
+        print(x)
         data = dataCapture()
         for y in range((int)(Fs)):
+            #print(y)
             final_data[x*Fs + y] = data[y]
+    print("i did da loops")
     t_spectro, f_spectro, specresults =  myspectrogram(final_data, 256, 64, Fs)
 
     # ----------------------------------------------------------
