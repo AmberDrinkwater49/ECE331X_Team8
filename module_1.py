@@ -19,10 +19,10 @@ import adi
 
 # Create radio
 sdr = adi.Pluto(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
-Fc = 433.9e6 #center frequency
+Fc = (int)(433.9e6) #center frequency
 bandwidth = 10e6 #Bandwidth of front-end analog filter of RX path
 Fm = bandwidth/2
-Fs = 6e6 #sampling frequency of ADC in samples per second
+Fs = (int)(6e6) #sampling frequency of ADC in samples per second
 
 
 # Configure properties
@@ -59,15 +59,16 @@ def dataCapture() -> list:
     data = sdr.rx()
     Rx_0 = data
     return Rx_0
+
     
 for x in range(30):
     data = dataCapture()
-    for y in range(Fs):
+    for y in range((int)(Fs)):
         final_data[x*Fs + y] = data[y]
 
 # ----------------------------------------------------------
 # Define the handmade spectrogram function
-def myspectrogram(final_data,N,M,Fs):
+def myspectrogram(data,N,M,Fs):
     
     # Calculate number of windows to be processed
     num_windows = int((len(data) - (M/2)) // (N - (M/2)))
@@ -97,8 +98,12 @@ def myspectrogram(final_data,N,M,Fs):
 
 
 def main():
+    #data = dataCapture()
+    for x in range(30):
     data = dataCapture()
-    t_spectro, f_spectro, specresults =  myspectrogram(data, 256, 64, Fs)
+        for y in range((int)(Fs)):
+            final_data[x*Fs + y] = data[y]
+    t_spectro, f_spectro, specresults =  myspectrogram(final, 256, 64, Fs)
 
     # ----------------------------------------------------------
     # Plot handmade version of spectrogram using color mesh plotting routine
