@@ -5,7 +5,7 @@ import time
 import adi
 import json
 
-num_seconds = 10
+num_seconds = 40
 # ----------------------------------------------------------
 # Code for generating a spectrogram based on the intermittent 
 # wireless transmission of AcuRite Wireless Digital Weather Thermometer
@@ -22,9 +22,9 @@ num_seconds = 10
 # Create radio
 sdr = adi.Pluto(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
 Fc = (int)(433.9e6) #carrier frequency
-bandwidth = 10e6 #Bandwidth of front-end analog filter of RX path
+bandwidth = 200e3 #Bandwidth of front-end analog filter of RX path
 Fm = bandwidth/2
-Fs = (int)(250e4) #sampling frequency of ADC in samples per second
+Fs = (int)(521e3) #sampling frequency of ADC in samples per second
 
 
 # Configure properties
@@ -104,7 +104,7 @@ def retrieve_data(file_name):
 
 def main():
     #data = dataCapture()
-    try:
+    #try:
         for x in range(num_seconds):
             print(x)
             data = dataCapture()
@@ -112,8 +112,8 @@ def main():
                 #print(y)
                 final_data[x*Fs + y] = data[y]
         print("i did da loops")
-    finally:
-        save_data('spectrogram.json', final_data)
+    #finally:
+        #save_data('spectrogram.json', final_data)
         t_spectro, f_spectro, specresults =  myspectrogram(final_data, 256, 64, Fs)
 
         # ----------------------------------------------------------
