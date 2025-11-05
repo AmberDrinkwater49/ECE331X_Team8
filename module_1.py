@@ -5,7 +5,7 @@ import time
 import adi
 import json
 
-num_seconds = 40
+num_seconds = 10
 # ----------------------------------------------------------
 # Code for generating a spectrogram based on the intermittent 
 # wireless transmission of AcuRite Wireless Digital Weather Thermometer
@@ -114,13 +114,15 @@ def main():
         print("i did da loops")
     #finally:
         #save_data('spectrogram.json', final_data)
-        t_spectro, f_spectro, specresults =  myspectrogram(final_data, 256, 64, Fs)
+        #t_spectro, f_spectro, specresults =  myspectrogram(final_data, 256, 64, Fs)
+        #t_spectro1, f_spectro1, specresults1 = signal.spectrogram(final_data,Fs,'hamming',256,64)
 
         # ----------------------------------------------------------
+        plt.specgram(final_data, Fs=Fs, NFFT=256, noverlap=64, Fc=Fc)
         # Plot handmade version of spectrogram using color mesh plotting routine
-        plt.pcolormesh(t_spectro,f_spectro,np.log10(specresults.T),shading='auto')
-        plt.ylabel('Frequency [Hz]')
-        plt.xlabel('Time [seconds]')
+        #plt.pcolormesh(t_spectro,f_spectro,np.log10(specresults.T),shading='auto')
+        #plt.ylabel('Frequency [Hz]')
+        #plt.xlabel('Time [seconds]')
         plt.show()
 
 main()
