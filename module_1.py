@@ -113,7 +113,7 @@ def main():
 
         for start in range(0, num_seconds*Fs, buffer_size):
             print(x)
-            end = start + buffer_size-1
+            end = start + buffer_size
             final_data[start:end] = sdr.rx()
             
             #for y in range((int)(Fs)): #dont need, directly copy 
