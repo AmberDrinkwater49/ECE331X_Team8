@@ -5,9 +5,9 @@ import time
 import adi
 import json
 
-num_seconds = 10
+num_seconds = 30
 # ----------------------------------------------------------
-# Code for generating a spectrogram based on the intermittent 
+# Code for generating a spectrogram based on the intermittent
 # wireless transmission of AcuRite Wireless Digital Weather Thermometer
 # and received by a Pluto SDR
 #
@@ -22,7 +22,7 @@ num_seconds = 10
 # Create radio
 sdr = adi.Pluto(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
 Fc = (int)(433.9e6) #carrier frequency
-bandwidth = 200e3 #Bandwidth of front-end analog filter of RX path
+bandwidth = 10e6 #Bandwidth of front-end analog filter of RX path
 Fs = (int)(521e3) #sampling frequency of ADC in samples per second
 buffer_size = (int)(2 ** 12)
 
@@ -39,7 +39,7 @@ sdr.rx_lo =(int)(Fc) #Carrier frequency of RX path (433.9 MHz)
 #sdr.tx_cyclic_buffer = True #sent data will keep getting repeated
 #sdr.tx_hardwaregain_chan0 = -30
 
-sdr.gain_control_mode_chan0 = "manual" #Mode of receive path AGC(Automatic Gain Control). 
+sdr.gain_control_mode_chan0 = "manual" #Mode of receive path AGC(Automatic Gain Control).
 #Options are: slow_attack, fast_attack, manual
 #slow_attack is for when the signal you are receiving has gradually changing power levels
 #while fast_attack is for rapidly changing power levels
@@ -71,10 +71,10 @@ def dataCapture() -> list:
 # ----------------------------------------------------------
 # Define the handmade spectrogram function
 def myspectrogram(data,N,M,Fs):
-    
+
     # Calculate number of windows to be processed
     num_windows = int((len(data) - (M/2)) // (N - (M/2)))
-    
+
     # Generate Hamming window
     hamming_window = np.hamming(N)
 
@@ -97,14 +97,14 @@ def myspectrogram(data,N,M,Fs):
     return t_spectro, f_spectro, spectrogram_results
 
 '''
-def save_data(file_name, data):
-    with open(file_name, 'w') as file:
-        json.dump(data, file)
+# def save_data(file_name, data):
+#     with open(file_name, 'w') as file:
+#         json.dump(data, file)
 
-def retrieve_data(file_name):
-    with open(file_name, 'r') as file:
-        data = json.load(file)
-        return data
+# def retrieve_data(file_name):
+#     with open(file_name, 'r') as file:
+#         data = json.load(file)
+#         return data
 
 def main():
     #data = dataCapture()
@@ -114,8 +114,8 @@ def main():
             #print(start)
             end = start + buffer_size
             final_data[start:end] = sdr.rx()
-            
-            #for y in range((int)(Fs)): #dont need, directly copy 
+
+            #for y in range((int)(Fs)): #dont need, directly copy
                 #print(y)
                 #final_data[x*Fs + y] = data[y]
         print("i did da loops")
@@ -130,6 +130,12 @@ def main():
         #plt.pcolormesh(t_spectro,f_spectro,np.log10(specresults.T),shading='auto')
         #plt.ylabel('Frequency [Hz]')
         #plt.xlabel('Time [seconds]')
+        #plt.savefig('plot.png')
         plt.show()
+        print("image made")
+
+        np.save('samples', final_data)
+        samples = np.load('samples.npy')
+        print(samples)
 
 main()
