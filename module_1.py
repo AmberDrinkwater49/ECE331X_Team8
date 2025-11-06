@@ -23,7 +23,6 @@ num_seconds = 10
 sdr = adi.Pluto(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
 Fc = (int)(433.9e6) #carrier frequency
 bandwidth = 200e3 #Bandwidth of front-end analog filter of RX path
-Fm = bandwidth/2
 Fs = (int)(521e3) #sampling frequency of ADC in samples per second
 buffer_size = (int)(2 ** 12)
 
@@ -68,7 +67,7 @@ def dataCapture() -> list:
     return Rx_0
 
 
-
+'''
 # ----------------------------------------------------------
 # Define the handmade spectrogram function
 def myspectrogram(data,N,M,Fs):
@@ -97,7 +96,7 @@ def myspectrogram(data,N,M,Fs):
 
     return t_spectro, f_spectro, spectrogram_results
 
-
+'''
 def save_data(file_name, data):
     with open(file_name, 'w') as file:
         json.dump(data, file)
@@ -112,7 +111,7 @@ def main():
     #try:
 
         for start in range(0, num_seconds*Fs, buffer_size):
-            print(x)
+            #print(start)
             end = start + buffer_size
             final_data[start:end] = sdr.rx()
             
