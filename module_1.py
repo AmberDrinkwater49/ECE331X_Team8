@@ -53,17 +53,15 @@ sdr.rx_buffer_size =  buffer_size  #Size of receive buffer in samples
 #use numpy zeros, set datatype to complex
 final_data = np.zeros(Fs * num_seconds + (buffer_size-(Fs*num_seconds)%buffer_size), dtype=complex)
 
-
+'''
 def dataCapture() -> list:
     #This function begins the capture of data at given frequencies to decode the thermometers
     data = sdr.rx()
     Rx_0 = data
     return Rx_0
-
+'''
 
 def main():
-
-
     for start in range(0, num_seconds*Fs, buffer_size):
         #print(start)
         end = start + buffer_size
