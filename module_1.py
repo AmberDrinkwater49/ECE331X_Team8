@@ -32,7 +32,7 @@ sdr.rx_rf_bandwidth = (int)(bandwidth) #Bandwidth of front-end analog filter of 
                       #max of 20MHz for AD9363
                       #will we have to limit bandwidth further bc data limitations?
 
-sdr.sample_rate = Fs #Sample rate RX and TX paths in samples per second
+sdr.rx_sample_rate = Fs #Sample rate RX and TX paths in samples per second
                             #max of 61440000 S/s (61.44 MS/s)
 sdr.rx_lo =(int)(Fc) #Carrier frequency of RX path (433.9 MHz)
 
@@ -45,16 +45,19 @@ sdr.gain_control_mode_chan0 = "slow_attack" #Mode of receive path AGC(Automatic 
 #slow_attack is for when the signal you are receiving has gradually changing power levels
 #while fast_attack is for rapidly changing power levels
 
+#sdr gain 50
 
-# Configuration of data channel
+
+# Configuration of data channel unneeded
 sdr.rx_enabled_channels = [0] #enable only one rx channel
 sdr.rx_buffer_size =  (int)(Fs)  #Size of receive buffer in samples
+#too high
 
 final_data = [0] * ((int)(Fs * num_seconds))
+#use numpy zeros, set datatype to complex
 
 
-
-
+#sdr_rx 4096 final data Fs *capture time 0-4096 4096-8112
 
 def dataCapture() -> list:
     #This function begins the capture of data at given frequencies to decode the thermometers
@@ -108,7 +111,7 @@ def main():
         for x in range(num_seconds):
             print(x)
             data = dataCapture()
-            for y in range((int)(Fs)):
+            for y in range((int)(Fs)): #dont need, directly copy 
                 #print(y)
                 final_data[x*Fs + y] = data[y]
         print("i did da loops")
