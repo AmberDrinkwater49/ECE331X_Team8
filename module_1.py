@@ -5,7 +5,7 @@ import time
 import adi
 import json
 
-num_seconds = 30
+num_seconds = 60
 # ----------------------------------------------------------
 # Code for generating a spectrogram based on the intermittent
 # wireless transmission of AcuRite Wireless Digital Weather Thermometer
@@ -21,10 +21,10 @@ num_seconds = 30
 
 # Create radio
 sdr = adi.Pluto(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
-Fc = (int)(433.9e6) #carrier frequency
-bandwidth = 10e6 #Bandwidth of front-end analog filter of RX path
-Fs = (int)(521e3) #sampling frequency of ADC in samples per second
-buffer_size = (int)(2 ** 12)
+Fc = (int)(433.9e6) #carrier frequency - original: 433.9e6
+bandwidth = 10e4 #Bandwidth of front-end analog filter of RX path original: 10e5
+Fs = (int)(512e3) #sampling frequency of ADC in samples per second original: 521e3
+buffer_size = (int)(2 ** 8) # previously 2 ** 12
 
 # Configure properties
 sdr.rx_rf_bandwidth = (int)(bandwidth) #Bandwidth of front-end analog filter of RX path
@@ -62,17 +62,25 @@ def dataCapture() -> list:
 '''
 
 def main():
+    time_start = time.time_ns()
+
     for start in range(0, num_seconds*Fs, buffer_size):
         #print(start)
         end = start + buffer_size
         final_data[start:end] = sdr.rx()
+    time_end = time.time_ns()
+    
+    time_diff = time_end - time_start
+    
+    print(time_diff)
+    
     print("i did da loops")
 
-    plt.specgram(final_data, Fs=Fs, NFFT=256, noverlap=64, Fc=Fc)
+    plt.specgram(final_data, Fs=Fs, NFFT=1024, noverlap=64, Fc=Fc)
 
-    #plt.savefig('plot.png')
+    plt.savefig('plot.png')
     plt.show()
-    print("image made")
+    #print("image made")
 
     np.save('samples', final_data)
     samples = np.load('samples.npy')
