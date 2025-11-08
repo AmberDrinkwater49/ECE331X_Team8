@@ -78,20 +78,37 @@ def dataCapture() -> list:
 '''
 
 def main():
+    running_std = 0
     for start in range(0, num_seconds*Fs, buffer_size):
         #print(start)
         end = start + buffer_size
-        final_data[start:end] = sdr.rx()
+        data = sdr.rx()
+        final_data[start:end] = data
+        if(running_std != 0 and np.std(data) >> running_std):
+            signalStart = start
+        elif(signalStart and np.std(data << running_std)):
+            signalEnd = end
+        else:
+            running_std = np.std(final_data)
     print("i did da loops")
 
-    plt.specgram(final_data, Fs=Fs, NFFT=256, noverlap=64, Fc=Fc)
+    try:
+        print("Signal Start: " + signalStart)
+        print("Signal End: " + signalEnd)
+    except:
+        print("Signal not found")
+    finally:
 
-    #plt.savefig('plot.png')
-    plt.show()
-    print("image made")
+        plt.specgram(final_data, Fs=Fs, NFFT=256, noverlap=64, Fc=Fc)
 
-    np.save('samples', final_data)
-    samples = np.load('samples.npy')
-    print(samples)
+        #plt.savefig('plot.png')
+        plt.show()
+        print("image made")
+
+        np.save('samples', final_data)
+        samples = np.load('samples.npy')
+        print(samples)
+        for sample in range(0,len(samples)):
+            np.std(samples)
 
 main()
