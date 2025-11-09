@@ -22,9 +22,12 @@ num_seconds = 60
 # Create radio
 sdr = adi.Pluto(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
 Fc = (int)(433.9e6) #carrier frequency - original: 433.9e6
-bandwidth = 10e4 #Bandwidth of front-end analog filter of RX path original: 10e5
-Fs = (int)(512e3) #sampling frequency of ADC in samples per second original: 521e3
-buffer_size = (int)(2 ** 8) # previously 2 ** 12
+
+bandwidth = 300e3 #Bandwidth of front-end analog filter of RX path original: 10e5
+Fs = (int)(1e6) #sampling frequency of ADC in samples per second original: 521e3
+buffer_size = (int)(2 ** 14) # previously 2 ** 12
+NFFT = 8192 #original: 1024
+noverlap = NFFT // 2 #original: 64
 
 # Configure properties
 sdr.rx_rf_bandwidth = (int)(bandwidth) #Bandwidth of front-end analog filter of RX path
@@ -76,7 +79,7 @@ def main():
     
     print("i did da loops")
 
-    plt.specgram(final_data, Fs=Fs, NFFT=1024, noverlap=64, Fc=Fc)
+    plt.specgram(final_data, Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
 
     plt.savefig('plot.png')
     plt.show()
