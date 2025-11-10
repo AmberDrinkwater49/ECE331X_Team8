@@ -90,8 +90,8 @@ def plot_constellation(data):
     plt.show()
 
 def main():
-	total_time = 67
-	
+    total_time = 67
+
     running_std = 0
     signalStart = 0
     signalEnd = 0
@@ -116,23 +116,23 @@ def main():
     print("Signal Start: " + str(signalStart))
     print("Signal End: " + str(signalEnd))
     if not signalEnd: signalEnd = len(raw_data)
-	
-	signal_data = raw_data[signalStart:signalEnd]
-	signal_time = total_time * (len(signal_data) / len(raw_data))
-	
-    plt.specgram(signal_data], Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
+    
+    signal_data = raw_data[signalStart:signalEnd]
+    signal_time = total_time * (len(signal_data) / len(raw_data))
+    
+    plt.specgram(signal_data, Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
 
     plt.savefig('plot.png')
     plt.show()
-	
-	
+
+
     print("image made")
-	
-	plot_magnitude(signal_data, signal_time)
-	plot_phase(signal_data, signal_time)
-	plot_constellation(signal_data)
-	
-	
+
+    plot_magnitude(signal_data, signal_time)
+    plot_phase(signal_data, signal_time)
+    plot_constellation(signal_data)
+
+
 
 
 main()
