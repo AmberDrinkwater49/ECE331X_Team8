@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 import time
-import adi
+#import adi
 import json
 
 num_seconds = 30
@@ -57,6 +57,9 @@ def plot_magnitude(data, time):
     print(timing)
     print(magnitudes)
     plt.plot(timing, magnitudes)
+    plt.xlabel("Time (seconds)")
+    plt.ylabel("Magnitude")
+    plt.title("Signal Magnitude Plot")
     plt.grid(True)
     plt.show()
     
@@ -70,6 +73,9 @@ def plot_phase(data, time):
     print(timing)
     print(phases)
     plt.plot(timing, phases)
+    plt.xlabel("Time (seconds)")
+    plt.ylabel("Phase (degrees)")
+    plt.title("Signal Phase Plot")
     plt.grid(True)
     plt.show()
     
