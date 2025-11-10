@@ -79,22 +79,35 @@ def dataCapture() -> list:
 
 def main():
     running_std = 0
+    signalStart = 0
+    signalEnd = 0
+    time_start = time.time_ns()
+
     for start in range(0, num_seconds*Fs, buffer_size):
         #print(start)
         end = start + buffer_size
         data = sdr.rx()
         final_data[start:end] = data
-        if(running_std != 0 and np.std(data) >> running_std):
+
+    print("i did da loops")
+
+    time_end = time.time_ns()
+    
+    time_diff = time_end - time_start
+    samplesConsidered = 10
+
+    for x in range(0, len(final_data)):
+        currentStd = np.std(final_data[x-samplesConsidered:]) 
+        if(running_std != 0 and currentStd> running_std):
             signalStart = start
-        elif(signalStart and np.std(data << running_std)):
+        elif(signalStart and currentStd < running_std):
             signalEnd = end
         else:
             running_std = np.std(final_data)
-    print("i did da loops")
 
     try:
-        print("Signal Start: " + signalStart)
-        print("Signal End: " + signalEnd)
+        print("Signal Start: " + str(signalStart))
+        print("Signal End: " + str(signalEnd))
     except:
         print("Signal not found")
     finally:

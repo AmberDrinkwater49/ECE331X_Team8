@@ -23,11 +23,11 @@ num_seconds = 60
 sdr = adi.Pluto(uri="ip:192.168.2.1") #default pluto ip address is 192.168.2.1
 Fc = (int)(433.9e6) #carrier frequency - original: 433.9e6
 
-bandwidth = 300e3 #Bandwidth of front-end analog filter of RX path original: 10e5
-Fs = (int)(1e6) #sampling frequency of ADC in samples per second original: 521e3
-buffer_size = (int)(2 ** 14) # previously 2 ** 12
-NFFT = 8192 #original: 1024
-noverlap = NFFT // 2 #original: 64
+bandwidth = 10e5 #Bandwidth of front-end analog filter of RX path original: 10e5
+Fs = (int)(521e3) #sampling frequency of ADC in samples per second original: 521e3
+buffer_size = (int)(2 ** 12) # previously 2 ** 12
+NFFT = 1024 #original: 1024
+noverlap = NFFT // 8 #original: 64
 
 # Configure properties
 sdr.rx_rf_bandwidth = (int)(bandwidth) #Bandwidth of front-end analog filter of RX path
