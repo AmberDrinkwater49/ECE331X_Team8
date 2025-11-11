@@ -133,7 +133,16 @@ def main():
 
 
     print("image made")
-
+    
+    numtaps = 101
+    Fcutoff = Fc
+    Fnyquist = Fs/2
+    
+    #generate low pass filter
+    coeffs = signal.firwin(numtaps,Fcutoff/Fnyquist,fs=Fs)
+    #convolve the filter and data to apply filter
+    signal_data = signal.fftconvolve(coeffs, signal_data)
+    
     plot_magnitude(signal_data, signal_time)
     plot_phase(signal_data, signal_time)
     plot_constellation(signal_data)
