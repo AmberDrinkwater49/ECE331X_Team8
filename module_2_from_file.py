@@ -89,7 +89,7 @@ def extract_Q(data):
     return Q_array
 
 def plot_constellation(data):
-    plt.plot(extract_I(data),extract_Q(data),marker='o',linestyle='',color='b',markersize=6)
+    plt.plot(extract_I(data),extract_Q(data),marker='o',linestyle='',color='b',markersize=1)
     plt.xlabel("In-Phase")
     plt.ylabel("Quadrature")
     plt.title("I/Q Signal Constellation")
@@ -136,17 +136,21 @@ def main():
 
     print("image made")
     
-    numtaps = 101
-    Fcutoff = Fc
+    numtaps = 10001
+    Fcutoff_low = Fc*0.75
+    Fcutoff_high = Fc*1.25
     Fnyquist = Fs/2
     
     #generate low pass filter
-    coeffs = signal.firwin(numtaps,Fcutoff/Fnyquist,fs=Fs)
+    coeffs = signal.firwin(numtaps,[Fcutoff_low/Fnyquist,Fcutoff_high/Fnyquist],fs=2*Fs,pass_zero=False)
     #convolve the filter and data to apply filter
     signal_data = signal.fftconvolve(coeffs, signal_data)
     
     plot_magnitude(signal_data, signal_time)
     plot_phase(signal_data, signal_time)
+    plt.specgram(signal_data, Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
+    plt.savefig('plot.png')
+    plt.show()
     plot_constellation(signal_data)
 
 
