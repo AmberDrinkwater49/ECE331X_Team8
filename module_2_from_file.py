@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import signal
 import time
-import adi
+#import adi
 import json
 
 num_seconds = 30
@@ -103,10 +103,10 @@ def main():
     signalStart = 0
     signalEnd = 0
 
-
+    
 
     raw_data = np.load("samples01.npy")
-
+    '''
     samplesConsidered = 1e5
 
     for x in range(int(samplesConsidered), len(raw_data), int(samplesConsidered)):
@@ -124,14 +124,16 @@ def main():
     print("Signal Start: " + str(signalStart))
     print("Signal End: " + str(signalEnd))
     if not signalEnd: signalEnd = len(raw_data)
-    
+    '''
+    signalStart = 11900000 #11950000
+    signalEnd = 12000000   #12000000
     signal_data = raw_data[signalStart:signalEnd]
     signal_time = total_time * (len(signal_data) / len(raw_data))
     
-    plt.specgram(signal_data, Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
+    #plt.specgram(signal_data, Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
 
-    plt.savefig('plot.png')
-    plt.show()
+    #plt.savefig('plot.png')
+    #plt.show()
 
 
     print("image made")
@@ -142,15 +144,15 @@ def main():
     Fnyquist = Fs/2
     
     #generate low pass filter
-    coeffs = signal.firwin(numtaps,[Fcutoff_low/Fnyquist,Fcutoff_high/Fnyquist],fs=2*Fs,pass_zero=False)
+    #coeffs = signal.firwin(numtaps,[Fcutoff_low/Fnyquist,Fcutoff_high/Fnyquist],fs=2*Fs,pass_zero=False)
     #convolve the filter and data to apply filter
-    signal_data = signal.fftconvolve(coeffs, signal_data)
+    #signal_data = signal.fftconvolve(coeffs, signal_data)
     
     plot_magnitude(signal_data, signal_time)
     plot_phase(signal_data, signal_time)
-    plt.specgram(signal_data, Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
-    plt.savefig('plot.png')
-    plt.show()
+    #plt.specgram(signal_data, Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
+    #plt.savefig('plot.png')
+    #plt.show()
     plot_constellation(signal_data)
 
 
