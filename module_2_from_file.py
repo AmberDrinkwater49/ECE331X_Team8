@@ -68,6 +68,7 @@ def plot_phase(data, time):
     #Possibly insert additional code that negates the imaginary part of the complex data?
 
     phases = np.angle(data) #convert complex I/Q data to phase (in radians)
+    phases = np.unwrap(phases) #unwrap makes it so there are no discontinuities caused by going from pi to -pi 
     #phases = np.rad2deg(phases) #degrees-ify
     timing = np.linspace(0, time, num=len(data))    
     
