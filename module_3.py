@@ -60,7 +60,7 @@ def plot_phase(data, time):
     print(phases)
     plt.plot(timing, phases)
     plt.xlabel("Time (seconds)")
-    plt.ylabel("Phase (degrees)")
+    plt.ylabel("Phase (radians)")
     plt.title("Signal Phase Plot")
     plt.grid(True)
     plt.show()
