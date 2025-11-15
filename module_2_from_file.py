@@ -68,14 +68,14 @@ def plot_phase(data, time):
     #Possibly insert additional code that negates the imaginary part of the complex data?
 
     phases = np.angle(data) #convert complex I/Q data to phase (in radians)
-    phases = np.rad2deg(phases) #degrees-ify
+    #phases = np.rad2deg(phases) #degrees-ify
     timing = np.linspace(0, time, num=len(data))    
     
     print(timing)
     print(phases)
     plt.plot(timing, phases)
     plt.xlabel("Time (seconds)")
-    plt.ylabel("Phase (degrees)")
+    plt.ylabel("Phase (radians)")
     plt.title("Signal Phase Plot")
     plt.grid(True)
     plt.show()
@@ -125,7 +125,7 @@ def main():
     print("Signal End: " + str(signalEnd))
     if not signalEnd: signalEnd = len(raw_data)
     '''
-    signalStart = 11900000 #11950000
+    signalStart = 11980000 #11950000 11900000
     signalEnd = 12000000   #12000000
     signal_data = raw_data[signalStart:signalEnd]
     signal_time = total_time * (len(signal_data) / len(raw_data))
