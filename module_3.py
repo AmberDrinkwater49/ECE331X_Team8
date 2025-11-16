@@ -151,6 +151,7 @@ def find_centroid(fft, frequencies):
         sum2 += np.abs(fft[x])
         if sum2 >= sum/2:
             print(frequencies[x])
+            print(x)
             return x
 
 
@@ -184,10 +185,11 @@ def main():
     print("Signal End: " + str(signalEnd))
     if not signalEnd: signalEnd = len(raw_data)
     '''
-    signalStart = 11900000 #11950000
+    signalStart = 11950000 #11900000
     signalEnd = 12000000   #12000000
     signal_data = raw_data[signalStart:signalEnd]
     signal_time = total_time * (len(signal_data) / len(raw_data))
+    plot_magnitude(signal_data, signal_time)
     
     #plt.specgram(signal_data, Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
 
@@ -197,20 +199,60 @@ def main():
 
     print("image made")
     
-    numtaps = 10001
-    Fcutoff_low = Fc*0.75
-    Fcutoff_high = Fc*1.25
-    Fnyquist = Fs/2
     
-    #generate low pass filter
-    #coeffs = signal.firwin(numtaps,[Fcutoff_low/Fnyquist,Fcutoff_high/Fnyquist],fs=2*Fs,pass_zero=False)
-    #convolve the filter and data to apply filter
     [fft, frequencies] = plot_fft(signal_data)
     offset = find_centroid(fft,frequencies)
     impulse = np.zeros(len(signal_data))
     impulse[offset] = 1
     signal_data = np.convolve(signal_data, impulse)
+    
+    
+    
+    #---------start version where convolve in frequency domain
+    #-------**realized this is silly and can just chop the fft at the offset index
+    '''
+    [fft, frequencies] = plot_fft(signal_data)
+    print('fft length:' + str(len(fft)))
+    print('fft window length:' + str(Fs/len(fft)))
+    print('expected index:' + str(700/(Fs/len(fft))))
+    offset = find_centroid(fft,frequencies)
+    offset = 70
+    
+    #we want a bigger fft so that we can have "negative" values for our negative impulse
+    bigger_fft = np.zeros(len(fft)+offset, dtype=complex)
+    bigger_fft[0:len(fft)] = fft
+    
+    impulse = np.zeros(len(fft)+offset)
+    impulse[0] = 1
+    
+    shifted_fft = np.convolve(bigger_fft, impulse)
+    print(shifted_fft)
+    
+    shifted_fft = shifted_fft[offset:len(shifted_fft)]
+    #plt.plot(frequencies, shifted_fft)
+    #plt.show()
+    signal_data = np.fft.ifft(shifted_fft)
+    '''
+    #---------end of version of where convolve in frequency domain
+    
+    
+    #---------start version where just chop the fft at the offset index
+    '''
+    [fft, frequencies] = plot_fft(signal_data)
+    offset = find_centroid(fft,frequencies)
 
+    shifted_fft = fft[offset:len(fft)]
+    print(shifted_fft)
+    
+    shifted_fft = shifted_fft[offset:len(shifted_fft)]
+    #plt.plot(frequencies, shifted_fft)
+    #plt.show()
+    signal_data = np.fft.ifft(shifted_fft)
+    '''
+    #---------start version where just chop the fft at the offset index
+    
+    
+    
     
     plot_magnitude(signal_data, signal_time)
     plot_phase(signal_data, signal_time)
