@@ -152,7 +152,7 @@ def find_centroid(fft, frequencies):
         if sum2 >= sum/2:
             print(frequencies[x])
             print(x)
-            return x
+            return frequencies[int(x*0.75)]
 
 
 
@@ -185,13 +185,14 @@ def main():
     print("Signal End: " + str(signalEnd))
     if not signalEnd: signalEnd = len(raw_data)
     '''
-    signalStart = 11950000 #11900000
+    signalStart = 11900000 #11900000
     signalEnd = 12000000   #12000000
     signal_data = raw_data[signalStart:signalEnd]
     signal_time = total_time * (len(signal_data) / len(raw_data))
     plot_magnitude(signal_data, signal_time)
-    
-    #plt.specgram(signal_data, Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
+    plot_phase(signal_data, signal_time)
+    plot_constellation(signal_data)
+    plt.specgram(signal_data, Fs=Fs, NFFT=NFFT, noverlap=noverlap, Fc=Fc)
 
     #plt.savefig('plot.png')
     #plt.show()
@@ -201,10 +202,23 @@ def main():
     
     
     [fft, frequencies] = plot_fft(signal_data)
+    print(frequencies)
+    print(fft)
     offset = find_centroid(fft,frequencies)
+    Fo = offset
+    #Fo=700
+    N = len(signal_data)
+    n = np.arange(N)               # sample index array
+    t = n / Fs                     # time base
+    
+    signal_data = signal_data * (math.e**(-1j*2*np.pi*Fo*t))
+    
+    plot_fft(signal_data)
+    '''
     impulse = np.zeros(len(signal_data))
     impulse[offset] = 1
     signal_data = np.convolve(signal_data, impulse)
+    '''
     
     
     
