@@ -27,6 +27,7 @@ import json
 #
 #
 
+
 def plot_magnitude(data, time):
     
     magnitudes = np.abs(data) #convert complex I/Q data to magnitude
@@ -73,4 +74,102 @@ def plot_constellation(data):
     plt.grid(True)
     plt.show()
 
+    
+def DDS(dds_input):
+    if (dds_current_phase is None):
+        dds_current_phase = 0
+    dds_current_phase = dds_current_phase + dds_input
+    return np.exp(-1j*2*np.pi*dds_current_phase)
 
+def mixer(dds_output, sample):
+    return dds_output * sample
+
+def get_phase_error(sample):
+    sample = sample ** 2 # BPSK so modulation order = 2
+    return np.angle(sample)
+
+def lpf(error):
+    #generate low pass filter
+    numtaps = 10001
+    Fcutoff_low = Fc*0.75
+    Fcutoff_high = Fc*1.25
+    Fnyquist = Fs/2
+    coeffs = signal.firwin(numtaps,[Fcutoff_low/Fnyquist,Fcutoff_high/Fnyquist],fs=2*Fs,pass_zero=False)
+    #convolve the filter and data to apply filter
+    signal_data = signal.fftconvolve(coeffs, signal_data)
+
+def update_dds(signal_data, new_error):
+    #add fancy stuff here if you want
+    dds_input = new_error
+    output_data = []
+
+    x = 0
+    for v in signal_data:
+        mixed_v = mixer(DDS(new_error), v)
+        output_data[x] = v
+        x = x + 1
+        error = get_phase_error(v)
+        # new_error = lpf(error)
+        new_error = error
+        update_dds(new_error)
+
+
+
+def main():
+    total_time = 60
+    signal_data = np.load("samplesBLE01.npy")
+    signal_time = total_time * (len(signal_data) / len(signal_data))
+
+    update_dds(signal_data, 0)
+
+    plot_magnitude(signal_data, signal_time)
+    plot_phase(signal_data, signal_time)
+    plot_constellation(signal_data)
+
+
+'''
+
+WARNING THIS ALMOST CERTAINLY IS BROKEN SOMEHOW
+goal: stabilize the signal constellation
+import 3 milllion libraries
+
+read the data from the file
+
+# do the processing steps here
+def mixer(dds output, sample):
+    return dds output * sample
+
+def get_phase_error(sample):
+    #square sample for BPSK or ^4 sample for QPSK you get the idea
+    #we're doing ASK here
+    return np.angle(sample)
+
+def lpf(error):
+    #i dunno do something here get numpy to do it for you I think
+
+dds_current_phase
+dds_input
+def DDS():
+    dds_current_phase = dds_current_phase + dds_input
+    return np.exp(-1j*2*pi*dds_current_phase)
+
+def update_dds(new error):
+    #add fancy stuff here if you want
+    dds_input = new error
+    output_data = []
+
+    for v in data:
+    mixed_v = mixer(DDS(), v)
+    output_data add mixed_v to the end
+    error = get_phase_error(sample)
+    new_error = lpf(error)
+    update_dds(new_error)
+    #it's called a DPL LLLLL so maybe you need a loop
+    #you need a mixer
+    #you need a phase error detector
+    #you need a low pass filter
+    #DDS (not a dentist) (or some equivalent frequency inator)
+
+plots plots baby
+'''
+main()
