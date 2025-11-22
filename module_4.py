@@ -26,3 +26,51 @@ import json
 #
 #
 #
+
+def plot_magnitude(data, time):
+    
+    magnitudes = np.abs(data) #convert complex I/Q data to magnitude
+    timing = np.linspace(0, time, num=len(data))    
+    
+    print(timing)
+    print(magnitudes)
+    plt.plot(timing, magnitudes)
+    plt.xlabel("Time (seconds)")
+    plt.ylabel("Magnitude")
+    plt.title("Signal Magnitude Plot")
+    plt.grid(True)
+    plt.show()
+    
+def plot_phase(data, time):
+
+    phases = np.angle(data) #convert complex I/Q data to phase (in radians)
+    phases = np.unwrap(phases) #unwrap makes it so there are no discontinuities caused by going from pi to -pi 
+    #phases = np.rad2deg(phases) #degrees-ify
+    timing = np.linspace(0, time, num=len(data))    
+    
+    print(timing)
+    print(phases)
+    plt.plot(timing, phases)
+    plt.xlabel("Time (seconds)")
+    plt.ylabel("Phase (radians)")
+    plt.title("Signal Phase Plot")
+    plt.grid(True)
+    plt.show()
+    
+def extract_I(data):
+    I_array = np.real(data)
+    return I_array
+
+def extract_Q(data):
+    Q_array = np.imag(data)
+    return Q_array
+
+def plot_constellation(data):
+    plt.plot(extract_I(data),extract_Q(data),marker='o',linestyle='',color='b',markersize=1)
+    plt.xlabel("In-Phase")
+    plt.ylabel("Quadrature")
+    plt.title("I/Q Signal Constellation")
+    plt.grid(True)
+    plt.show()
+
+
