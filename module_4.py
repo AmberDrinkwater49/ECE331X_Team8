@@ -66,13 +66,14 @@ def extract_Q(data):
     Q_array = np.imag(data)
     return Q_array
 
-def plot_constellation(data):
+def plot_constellation(data, Ki):
     plt.plot(extract_I(data),extract_Q(data),marker='o',linestyle='',color='b',markersize=1)
     plt.xlabel("In-Phase")
     plt.ylabel("Quadrature")
     plt.title("I/Q Signal Constellation")
     plt.grid(True)
-    plt.show()
+    plt.savefig("Constellation-with-Ki-" + str(Ki) + ".png")
+    #plt.show()
 
 dds_current_phase = 0
 def DDS(dds_input):
@@ -88,38 +89,49 @@ def get_phase_error(sample):
     return 0.5*np.angle(sample)
 
 error_lpf = 0
-def lpf(new_error):
+def lpf(new_error, Kp, Ki):
     #generate low pass filter
     global error_lpf
     error_lpf = (error_lpf + new_error)/2
-    return error_lpf
+    return Kp*new_error + Ki*error_lpf
 
 def update_DDS(new_error):
     dds_input = new_error
 
 def main():
-    total_time = 60
-    signal_data = np.load("samplesBLE01.npy")
-    signal_data = signal_data[:int(len(signal_data)/200)]
-    signal_time = total_time * (len(signal_data) / len(signal_data))
+    Kp = 0.01 # 0 seemed best
+    Ki = 0.05 # 0.05 seemed best but not good
+    for Ki in range(5,50,1):
+        Ki = Ki / 100
+        total_time = 60
+        signal_data = np.load("samplesBLE01.npy")
+        signal_data = signal_data[:int(len(signal_data)/10)]
+        signal_data = signal_data / np.mean(np.abs(signal_data))
 
-    output_data = []
+        signal_time = total_time * (len(signal_data) / len(signal_data))
 
-    new_error = get_phase_error(signal_data[0])
+        output_data = []
 
-    for v in signal_data:
-        mixed_v = mixer(DDS(new_error), v)
-        output_data.append(mixed_v)
-        error = get_phase_error(mixed_v)
-        new_error = lpf(error)
+        new_error = get_phase_error(signal_data[0])
 
-    # plot_magnitude(signal_data, signal_time)
-    # plot_phase(signal_data, signal_time)
-    # plot_constellation(signal_data)
 
-    # plot_magnitude(output_data, signal_time)
-    # plot_phase(output_data, signal_time)
-    plot_constellation(output_data)
+
+        for v in signal_data:
+            mixed_v = mixer(DDS(new_error), v)
+            output_data.append(mixed_v)
+            error = get_phase_error(mixed_v)
+            new_error = lpf(error, Kp, Ki)
+
+        #Exclude Bad Data
+        output_data = output_data[int(len(output_data)/25):]
+
+        # plot_magnitude(signal_data, signal_time)
+        # plot_phase(signal_data, signal_time)
+        # plot_constellation(signal_data)
+
+        # plot_magnitude(output_data, signal_time)
+        # plot_phase(output_data, signal_time)
+        plot_constellation(output_data, Ki)
 
 
 '''
