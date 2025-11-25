@@ -74,57 +74,52 @@ def plot_constellation(data):
     plt.grid(True)
     plt.show()
 
-    
+dds_current_phase = 0
 def DDS(dds_input):
-    if (dds_current_phase is None):
-        dds_current_phase = 0
+    global dds_current_phase
     dds_current_phase = dds_current_phase + dds_input
-    return np.exp(-1j*2*np.pi*dds_current_phase)
+    return np.exp(-1j*dds_current_phase)
 
 def mixer(dds_output, sample):
     return dds_output * sample
 
 def get_phase_error(sample):
     sample = sample ** 2 # BPSK so modulation order = 2
-    return np.angle(sample)
+    return 0.5*np.angle(sample)
 
-def lpf(error):
+error_lpf = 0
+def lpf(new_error):
     #generate low pass filter
-    numtaps = 10001
-    Fcutoff_low = Fc*0.75
-    Fcutoff_high = Fc*1.25
-    Fnyquist = Fs/2
-    coeffs = signal.firwin(numtaps,[Fcutoff_low/Fnyquist,Fcutoff_high/Fnyquist],fs=2*Fs,pass_zero=False)
-    #convolve the filter and data to apply filter
-    signal_data = signal.fftconvolve(coeffs, signal_data)
+    global error_lpf
+    error_lpf = (error_lpf + new_error)/2
+    return error_lpf
 
-def update_dds(signal_data, new_error):
-    #add fancy stuff here if you want
+def update_DDS(new_error):
     dds_input = new_error
-    output_data = []
-
-    x = 0
-    for v in signal_data:
-        mixed_v = mixer(DDS(new_error), v)
-        output_data[x] = v
-        x = x + 1
-        error = get_phase_error(v)
-        # new_error = lpf(error)
-        new_error = error
-        update_dds(new_error)
-
-
 
 def main():
     total_time = 60
     signal_data = np.load("samplesBLE01.npy")
+    signal_data = signal_data[:int(len(signal_data)/200)]
     signal_time = total_time * (len(signal_data) / len(signal_data))
 
-    update_dds(signal_data, 0)
+    output_data = []
 
-    plot_magnitude(signal_data, signal_time)
-    plot_phase(signal_data, signal_time)
-    plot_constellation(signal_data)
+    new_error = get_phase_error(signal_data[0])
+
+    for v in signal_data:
+        mixed_v = mixer(DDS(new_error), v)
+        output_data.append(mixed_v)
+        error = get_phase_error(mixed_v)
+        new_error = lpf(error)
+
+    # plot_magnitude(signal_data, signal_time)
+    # plot_phase(signal_data, signal_time)
+    # plot_constellation(signal_data)
+
+    # plot_magnitude(output_data, signal_time)
+    # plot_phase(output_data, signal_time)
+    plot_constellation(output_data)
 
 
 '''
