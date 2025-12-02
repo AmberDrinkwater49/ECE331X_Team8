@@ -66,14 +66,13 @@ def extract_Q(data):
     Q_array = np.imag(data)
     return Q_array
 
-def plot_constellation(data, Ki):
+def plot_constellation(data):
     plt.plot(extract_I(data),extract_Q(data),marker='o',linestyle='',color='b',markersize=1)
     plt.xlabel("In-Phase")
     plt.ylabel("Quadrature")
     plt.title("I/Q Signal Constellation")
     plt.grid(True)
-    plt.savefig("Constellation-with-Ki-" + str(Ki) + ".png")
-    #plt.show()
+    plt.show()
 
 dds_current_phase = 0
 def DDS(dds_input):
@@ -81,102 +80,55 @@ def DDS(dds_input):
     dds_current_phase = dds_current_phase + dds_input
     return np.exp(-1j*dds_current_phase)
 
+#simply mixes the sample and output
 def mixer(dds_output, sample):
     return dds_output * sample
 
 def get_phase_error(sample):
     sample = sample ** 2 # BPSK so modulation order = 2
+    #divide by the modulation order as well when returning the angle
     return 0.5*np.angle(sample)
 
 error_lpf = 0
 def lpf(new_error, Kp, Ki):
     #generate low pass filter
     global error_lpf
+    #a running average acts as the lowpass filter
     error_lpf = (error_lpf + new_error)/2
     return Kp*new_error + Ki*error_lpf
 
-def update_DDS(new_error):
-    dds_input = new_error
+
 
 def main():
-    Kp = 0.01 # 0 seemed best
-    Ki = 0.05 # 0.05 seemed best but not good
-    for Ki in range(5,50,1):
-        Ki = Ki / 100
-        total_time = 60
-        signal_data = np.load("samplesBLE01.npy")
-        signal_data = signal_data[:int(len(signal_data)/10)]
-        signal_data = signal_data / np.mean(np.abs(signal_data))
-
-        signal_time = total_time * (len(signal_data) / len(signal_data))
-
-        output_data = []
-
-        new_error = get_phase_error(signal_data[0])
+    signal_data = np.load("samplesBLE01.npy")
+    #normalize the data
+    signal_data = signal_data / np.mean(np.abs(signal_data))
 
 
-
-        for v in signal_data:
-            mixed_v = mixer(DDS(new_error), v)
-            output_data.append(mixed_v)
-            error = get_phase_error(mixed_v)
-            new_error = lpf(error, Kp, Ki)
-
-        #Exclude Bad Data
-        output_data = output_data[int(len(output_data)/25):]
-
-        # plot_magnitude(signal_data, signal_time)
-        # plot_phase(signal_data, signal_time)
-        # plot_constellation(signal_data)
-
-        # plot_magnitude(output_data, signal_time)
-        # plot_phase(output_data, signal_time)
-        plot_constellation(output_data, Ki)
-
-
-'''
-
-WARNING THIS ALMOST CERTAINLY IS BROKEN SOMEHOW
-goal: stabilize the signal constellation
-import 3 milllion libraries
-
-read the data from the file
-
-# do the processing steps here
-def mixer(dds output, sample):
-    return dds output * sample
-
-def get_phase_error(sample):
-    #square sample for BPSK or ^4 sample for QPSK you get the idea
-    #we're doing ASK here
-    return np.angle(sample)
-
-def lpf(error):
-    #i dunno do something here get numpy to do it for you I think
-
-dds_current_phase
-dds_input
-def DDS():
-    dds_current_phase = dds_current_phase + dds_input
-    return np.exp(-1j*2*pi*dds_current_phase)
-
-def update_dds(new error):
-    #add fancy stuff here if you want
-    dds_input = new error
     output_data = []
 
-    for v in data:
-    mixed_v = mixer(DDS(), v)
-    output_data add mixed_v to the end
-    error = get_phase_error(sample)
-    new_error = lpf(error)
-    update_dds(new_error)
-    #it's called a DPL LLLLL so maybe you need a loop
-    #you need a mixer
-    #you need a phase error detector
-    #you need a low pass filter
-    #DDS (not a dentist) (or some equivalent frequency inator)
+    #Values for PI control
+    Kp = 1
+    Ki = 0.02
 
-plots plots baby
-'''
+    new_error = get_phase_error(signal_data[0])
+
+
+    #iterate through all of the data
+    for v in range(len(signal_data)):
+        mixed_v = mixer(DDS(new_error), signal_data[v])
+        error = get_phase_error(mixed_v)
+        new_error = lpf(error, Kp, Ki)
+        #To determine when the lock is acheived
+        #the values here were determined based mostly on trial and error, we started from what the last error value was and then went down in orders of magnitude.
+        if abs(error) < 0.00001 and v > 100:
+            # adding only values that are below a certain error threshold
+            output_data.append(mixed_v)
+
+
+    #before
+    plot_constellation(signal_data)
+    #after
+    plot_constellation(output_data)
+
 main()
