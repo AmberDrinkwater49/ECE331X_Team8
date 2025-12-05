@@ -38,12 +38,12 @@ sdr.rx_sample_rate = Fs #Sample rate RX and TX paths in samples per second
                             #max of 61440000 S/s (61.44 MS/s)
 sdr.rx_lo =(int)(Fc) #Carrier frequency of RX path (433.9 MHz)
 
-sdr.gain_control_mode_chan0 = "manual" #Mode of receive path AGC(Automatic Gain Control).
+sdr.gain_control_mode_chan0 = "fast_attack" #Mode of receive path AGC(Automatic Gain Control).
 #Options are: slow_attack, fast_attack, manual
 #slow_attack is for when the signal you are receiving has gradually changing power levels
 #while fast_attack is for rapidly changing power levels
 
-sdr.rx_hardwaregain_chan0 = 50
+#sdr.rx_hardwaregain_chan0 = 50
 #sdr gain 50
 
 
