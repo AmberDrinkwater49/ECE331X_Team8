@@ -81,7 +81,7 @@ def whiten_dynamic(bits, channel=38):
 	working_poly = np.array(polynomial[:-1])
 	
 	# setup registers
-	channel_array = [int(x) for x in format(channel, "0>6b")]
+	channel_array = [int(x) for x in format(channel, "0>6b")] #convert integer channel number into list of binary, index 0 is MSB
 	state = np.array([1] + channel_array, dtype=int) # from core spec
 	out_array = np.array([], dtype=int)
 	
@@ -93,6 +93,8 @@ def whiten_dynamic(bits, channel=38):
     #############################################################
     #############################################################
 		# add bit to the output array
+		out_bit = state[-1]
+		out_array = np.append(out_array, out_bit)
 		
 	#############################################################
     #############################################################
@@ -102,7 +104,7 @@ def whiten_dynamic(bits, channel=38):
 		
 		# add a 0 to the front of the state array
 		# this will be changed to a 1 if needed by the xor
-		state = np.insert(state[:-1], 0, 0)
+		state = np.insert(state[:-1], 0, 0) #also does the shifting here
 		
 		# feedback is done as a single xor step
 		xor_array = out_bit*working_poly
@@ -166,7 +168,7 @@ def intme(data):
 #-----------------------------------------------------------------------------------------
 
 def channel_printer(packets_dictionary, offset_time = 0):
-	sort_keys = sorted(packets_dictionary.keys())
+	sort_keys = sorted(packets_dictionary.keys()) #sort_keys is a list of the timestamps in order
 	for key in sort_keys: # keys are timestamps, which are at symbol rate
 		time = round((key/1e3) + offset_time,3)
 		ad_packet_printer(packets_dictionary[key], time)
