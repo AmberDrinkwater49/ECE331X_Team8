@@ -7,12 +7,13 @@ import matplotlib.pyplot as plt
 
 def plotme(thing, name = "", show_grid = False, show_pips = False):
 	#return # use as global plotting disable
+	fig_name = name + ".png"
+	
 	plt.plot(thing)
 	if show_pips: plt.plot(thing, "bo")
 	plt.title(name)
 	if show_grid: plt.grid()
-	plt.show()
-
+	plt.savefig(fig_name)
 
 #-----------------------------------------------------------------------------------------
 
