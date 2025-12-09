@@ -1,5 +1,6 @@
 import Hardware_Abstraction_Layer as HAL
 import BLE
+#import adi
 import plot_helpers as ph
 import numpy as np
 
@@ -11,29 +12,29 @@ import numpy as np
 ad_channels = {37:2402e6, 38:2426e6, 39:2480e6}
 channel = 38
 
-fc = 38
+fc = ad_channels[channel]
 fs = 4e6
 buff_size = 2**20
 
 print("sample rate: %s" % fs)
 print("collection time: %s" % (buff_size/fs))
 
-HAL.make_a_radio("pluto")
-HAL.start_receiver(fc, fs, buff_size)
+#HAL.make_a_radio("pluto")
+#HAL.start_receiver(fc, fs, buff_size)
 
 # # read data ------------------------------------------------------------------------------
 
-buffer = HAL.get_filled_buffer()
-#buffer = np.fromfile('C:/Users/meflo/Documents/Official Final Master Code/15019-samples.iq', np.complex128)
+#buffer = HAL.get_filled_buffer()
+buffer = np.fromfile('C:/Users/amber/Documents/ECE331X_Team8/example_ble_data.npy', np.complex128)
 # process data ---------------------------------------------------------------------------
 
 decoded_channel = BLE.decode_ad_channel(buffer, dwnsmpl=int(fs/1e6), chan_num= 38) 
-
-
+print("Decodded the channel")
+print(decoded_channel)
 # print out data -------------------------------------------------------------------------
 
 BLE.channel_printer(decoded_channel)
 
 # turn off the radio ---------------------------------------------------------------------
 
-HAL.turn_off_radio()
+#HAL.turn_off_radio()

@@ -1,6 +1,8 @@
 import numpy as np
 import plot_helpers as ph
 import BLE_Code_Lookup as lookup
+import matplotlib.pyplot as plt
+
 # BLE Methods ----------------------------------------------------------------------------
 
 #-----------------------------------------------------------------------------------------
@@ -24,18 +26,20 @@ def get_bit_stream(data_stream, downsample_ratio = 2):
     #############################################################
 	
 	# Step 1: Extract the phase of the signal and make it continous
-	
+	continuous_phase = np.unwrap(np.angle(data_stream))
 	
 	 # Step 2: Downsample the phase data to reduce complexity
 	downsampled_phase = continuous_phase[::downsample_ratio]
 	
-	
+	freq_data = np.zeros(len(downsampled_phase)-1)
 	
     # Step 3: Compute the phase difference (frequency changes)
+	for x in range(len(downsampled_phase)-1):
+		freq_data[x] = downsampled_phase[x+1] - downsampled_phase[x] #Very unsure about this whole thing - Amber
 	
-	
-	# Step 4: Plot the phase differential
-	
+	# Step 4: Plot the phase differential    
+
+	#ph.plotme(freq_data)
 	
 	#############################################################
     #############################################################
@@ -169,15 +173,19 @@ def intme(data):
 
 def channel_printer(packets_dictionary, offset_time = 0):
 	sort_keys = sorted(packets_dictionary.keys()) #sort_keys is a list of the timestamps in order
+	print("I'm about to for loop it up")
 	for key in sort_keys: # keys are timestamps, which are at symbol rate
 		time = round((key/1e3) + offset_time,3)
+		print("I'm going to print the packet now")
 		ad_packet_printer(packets_dictionary[key], time)
 
 
 #-----------------------------------------------------------------------------------------
 
 def ad_packet_printer(decoded_packet, time):
-	if decoded_packet == []: return # covers for short packet fail
+	if decoded_packet == []: 
+		print("Didn't decode shit")
+		return # covers for short packet fail
 	
 	print("Found an advertising packet from %s on channel %s at time %sms!" % (decoded_packet["Advertising Address"], decoded_packet["channel"], time))
 	
@@ -254,7 +262,7 @@ def decode_ad_packet(packet_bits, channel=38):
 	sections["CRC"] = crc_pass
 	sections["channel"] = channel
 	if crc_pass == "fail":
-		#print("failed crc channel %s" % channel)
+		print("failed crc channel %s" % channel)
 		pass
 		#return [] # I can do a fail check in the printing function
 	return sections
