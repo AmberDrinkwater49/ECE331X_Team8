@@ -27,19 +27,22 @@ def get_bit_stream(data_stream, downsample_ratio = 2):
 	
 	# Step 1: Extract the phase of the signal and make it continous
 	continuous_phase = np.unwrap(np.angle(data_stream))
-	
+	mag = np.abs(data_stream)
+	print("magnitude: ", mag)
+	print("continuous phase: ", continuous_phase)
 	 # Step 2: Downsample the phase data to reduce complexity
 	downsampled_phase = continuous_phase[::downsample_ratio]
-	
-	freq_data = np.zeros(len(downsampled_phase)-1)
+	downsampled_mag = mag[::downsample_ratio]
+
+	mask = downsampled_mag > 0.01
+
 	
     # Step 3: Compute the phase difference (frequency changes)
-	for x in range(len(downsampled_phase)-1):
-		freq_data[x] = downsampled_phase[x+1] - downsampled_phase[x] #Very unsure about this whole thing - Amber
-	
+	freq_data = np.diff(downsampled_phase, 1)
+	freq_data = freq_data*mask[:-1]
 	# Step 4: Plot the phase differential    
 
-	#ph.plotme(freq_data)
+	ph.plotme(freq_data)
 	
 	#############################################################
     #############################################################
@@ -65,7 +68,7 @@ def whiten(bits, channel=38):
 
 def whiten_dynamic(bits, channel=38):
 	# This part of the code should be done using an LFSR Loop
-	
+	print("Whiten Dynamic")
 	# setup polynomial
 	polynomial = 8*[0]
 	
@@ -284,9 +287,9 @@ def fix_CRC(packet_bits, CRC):
 def decode_ad_channel(data, dwnsmpl = 2, chan_num = 38):
 	
 	bits = get_bit_stream(data, downsample_ratio = dwnsmpl)
-
+	print("Bits is: ", bits)
 	packet_start_locations = find_advertising_packets(bits)
-
+	print("Packet Start Location is: ", packet_start_locations)
 	packets = []
 	for loc in packet_start_locations:
 		AA_start = loc+40
