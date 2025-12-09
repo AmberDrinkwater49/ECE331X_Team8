@@ -42,7 +42,7 @@ def get_bit_stream(data_stream, downsample_ratio = 2):
 	freq_data = freq_data*mask[:-1]
 	# Step 4: Plot the phase differential    
 
-	ph.plotme(freq_data)
+	ph.plotme(freq_data, "phaseDiff")
 	
 	#############################################################
     #############################################################
